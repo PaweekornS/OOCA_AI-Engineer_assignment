@@ -82,8 +82,10 @@ class TriageDecision(BaseModel):
     draft_response: Optional[str] = Field(
         None,
         description=(
-            "Draft response to the customer. "
-            "Must mirror customer language (polite Thai with ครับ/ค่ะ for Thai tickets). "
+            "Direct in-app ticket response to the customer. "
+            "STRICT LANGUAGE RULE: If the ticket is in English, reply in 100% English. "
+            "Reply in polite Thai (ครับ/ค่ะ) ONLY if the customer wrote in Thai. NEVER reply in Thai to an English ticket. "
+            "FORMAT RULE: Do NOT format as an email (NO 'Subject:', NO 'Dear...', NO 'Best regards/Sincerely'). "
             "Must NEVER promise monetary refunds or instant financial reversals autonomously."
         ),
     )

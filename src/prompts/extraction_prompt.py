@@ -14,8 +14,25 @@ Based on the full conversation thread, customer context, and all tool findings r
 - **`route_to_specialist`**: Complex disputed transactions, duplicate payment charges, or technical bugs requiring engineering investigation. Target: 'Billing Operations' or 'Product Engineering'.
 - **`auto-respond`**: Low-risk inquiries where verified troubleshooting workarounds exist in the knowledge base, or acknowledging feature suggestions.
 
-### Safety Guardrails Reminder:
-1. Under NO circumstances should `draft_response` promise or guarantee monetary refunds.
-2. If Thai was used by the customer, ensure `draft_response` is in professional, polite Thai (with ครับ/ค่ะ).
-3. If dark mode scheduling by time was requested, explain that scheduled dark mode is currently a feature request, and provide the known workaround for the macOS theme sync bug if applicable.
+### Response Drafting Rules & Template Standards:
+1. **For `escalate_to_human`**:
+   - The system enforces a fixed, official incident escalation template confirming the ticket has been paged to the On-Call Engineering / Incident Management team.
+2. **For `route_to_specialist`**:
+   - Use a structured template with slot filling:
+     * Mention the specific issue being routed (e.g. 'multiple pending charges and Pro export feature access').
+     * Specify the target specialist team (e.g. 'Billing Operations').
+     * Include preliminary policy guidance if relevant (e.g. explaining bank authorization holds vs settled charges, but NEVER promising refunds or cancellations).
+3. **For `auto-respond`**:
+   - Provide the verified workaround from the knowledge base (e.g. macOS appearance toggle steps) and acknowledge feature feedback.
+4. **Strict Language Rule**:
+   - MUST match customer language 100%:
+     * If the customer wrote in English -> draft_response MUST be 100% English.
+     * If the customer wrote in Thai -> draft_response MUST be in polite, formal Thai (ครับ/ค่ะ).
+     * NEVER reply in Thai to an English inquiry!
+5. **Direct Ticket Message Format (NOT Email)**:
+   - This is an automated in-ticket support response system, NOT an email letter.
+   - Absolutely NO 'Subject:', NO 'Dear Customer / Alex,', and NO sign-offs like 'Sincerely, The Team' or 'Best regards'.
+   - Write a direct, empathetic message suitable for a support ticket thread.
+6. **Financial Guardrail**:
+   - Under NO circumstances should `draft_response` promise or guarantee monetary refunds.
 """

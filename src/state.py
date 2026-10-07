@@ -13,6 +13,7 @@ class TriageState(TypedDict):
     ticket_id: str
     customer_info: str
     thread_text: str
+    language: str  # "th" or "en"
 
     # Agent conversation history & tool messages
     messages: Annotated[List[BaseMessage], add_messages]
