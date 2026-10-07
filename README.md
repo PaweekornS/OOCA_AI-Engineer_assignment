@@ -122,9 +122,11 @@ OOCA_AI-Eng-test/
 │   │   ├── domain.py           # Inbound ticket & message schemas
 │   │   └── triage.py           # TriageDecision & classification enums
 │   ├── tools/
-│   │   ├── base.py             # Tool bundle registry
-│   │   ├── knowledge_tools.py  # Markdown KB lookup engine
-│   │   └── system_tools.py     # Regional health & telemetry tool
+│   │   ├── base.py             # Tool bundle registry (get_triage_tools)
+│   │   ├── knowledge_tools.py  # Hybrid Search KB lookup engine (BM25 + Dense Embeddings + RRF)
+│   │   ├── system_tools.py     # Regional health & infrastructure telemetry tool
+│   │   ├── billing_tools.py    # Payment gateway (Stripe) ledger & auth-hold inspector
+│   │   └── ticket_tools.py     # CRM historical tickets & SLA commitment inspector
 │   ├── prompts/
 │   │   ├── system_prompt.py    # Master ReAct instructions & guardrails
 │   │   └── extraction_prompt.py# Structured output synthesis prompt
