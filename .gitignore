@@ -25,5 +25,10 @@ Thumbs.db
 .docker/
 
 # test challenges file
-.docx
-.pdf
+*.docx
+*.pdf
+
+# Application Audit Logs
+logs/
+*.log
+

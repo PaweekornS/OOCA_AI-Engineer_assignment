@@ -1,12 +1,19 @@
-"""Terminal formatting and Rich console UI components for evaluator presentation."""
-
+import sys
 from typing import Any, Dict
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-console = Console()
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
+console = Console(legacy_windows=False)
+
 
 
 def print_banner():
@@ -45,7 +52,7 @@ def print_ticket_overview(ticket_dict: Dict[str, Any]):
     console.print(table)
 
 
-def print_triage_decision(decision: Dict[str, Any]):
+def print_triage_decision(decision: Dict[str, Any], state: Any = None):
     """Renders the final triage decision as a formatted Rich table and response card."""
     urgency = decision.get("urgency", "low").lower()
     urgency_color = {
@@ -73,6 +80,20 @@ def print_triage_decision(decision: Dict[str, Any]):
     summary_table.add_row("Issue Type", str(decision.get("issue_type", "N/A")))
     summary_table.add_row("Customer Sentiment", str(decision.get("customer_sentiment", "N/A")))
 
+    if state and isinstance(state, dict):
+        from langchain_core.messages import ToolMessage
+        tools_called = [
+            getattr(m, "name", "tool")
+            for m in state.get("messages", [])
+            if isinstance(m, ToolMessage)
+        ]
+        tools_display = (
+            f"{', '.join(tools_called)} ({len(tools_called)} call{'s' if len(tools_called) > 1 else ''})"
+            if tools_called
+            else "None (Resolved via prompt context)"
+        )
+        summary_table.add_row("Tools Invoked", Text(tools_display, style="bold magenta"))
+
     console.print(summary_table)
 
     # Reasoning card
@@ -94,3 +115,6 @@ def print_triage_decision(decision: Dict[str, Any]):
                 border_style="green",
             )
         )
+
+    console.print("[dim]  📄 Audit Log: Record appended to logs/triage_audit.jsonl[/dim]\n")
+

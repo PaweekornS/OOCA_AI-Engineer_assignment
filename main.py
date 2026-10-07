@@ -1,10 +1,15 @@
-"""Main CLI entrypoint for the Support Ticket Triage Agent."""
-
 import argparse
 import json
 import sys
 from pathlib import Path
 from rich.console import Console
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 
 from src.config import settings
 from src.graph.workflow import create_triage_graph
@@ -15,7 +20,7 @@ from src.utils.formatting import (
     print_triage_decision,
 )
 
-console = Console()
+console = Console(legacy_windows=False)
 
 
 def load_sample_tickets():
@@ -53,6 +58,7 @@ def run_ticket_triage(ticket_raw: dict, graph_app, json_output: bool = False):
         "ticket_id": ticket_id,
         "customer_info": customer_info,
         "thread_text": thread_text,
+        "language": "en",
         "messages": [],
         "tool_call_count": 0,
         "triage_result": None,
@@ -64,7 +70,7 @@ def run_ticket_triage(ticket_raw: dict, graph_app, json_output: bool = False):
     if json_output:
         print(json.dumps({"ticket_id": ticket_id, "triage_decision": decision}, indent=2, ensure_ascii=False))
     else:
-        print_triage_decision(decision)
+        print_triage_decision(decision, state=final_state)
 
     return decision
 
