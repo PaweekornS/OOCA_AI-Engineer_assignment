@@ -29,9 +29,16 @@ def test_kb_lookup_macos_dark_mode():
 
 
 def test_kb_lookup_deliberate_knowledge_gap():
-    """Verifies that queries on unreleased capabilities return a 'No documentation found' notice."""
-    result = lookup_knowledge_base.invoke({"query": "auto-schedule dark mode switch at 6pm"})
+    """Verifies that completely out-of-domain queries return a 'No documentation found' notice."""
+    result = lookup_knowledge_base.invoke({"query": "cryptocurrency bitcoin mining blockchain token"})
     assert "No relevant documentation found" in result
+
+
+def test_kb_lookup_unreleased_feature_scheduling():
+    """Verifies that querying scheduled dark mode confirms it is an unreleased feature request."""
+    result = lookup_knowledge_base.invoke({"query": "time-based theme scheduling auto switch"})
+    assert "Unreleased Features" in result or "not currently supported" in result
+
 
 
 def test_system_status_asia_telemetry():
@@ -47,3 +54,22 @@ def test_system_status_us_healthy():
     result = check_system_status.invoke({"region": "US-East"})
     assert "US-East" in result
     assert "HEALTHY" in result
+
+
+def test_check_billing_records_pending_hold():
+    """Verifies billing tool detects uncaptured authorization holds for Scenario 1."""
+    from src.tools.billing_tools import check_billing_records
+    result = check_billing_records.invoke({"customer_id": "TICKET-001", "query": "pending charges"})
+    assert "Payment Gateway" in result
+    assert "uncaptured_authorization" in result
+    assert "29.99" in result
+
+
+def test_check_ticket_history_enterprise_sla():
+    """Verifies ticket history tool returns enterprise SLA commitments for Scenario 2."""
+    from src.tools.ticket_tools import check_ticket_history
+    result = check_ticket_history.invoke({"customer_id": "Enterprise Thailand"})
+    assert "CRM Customer Interaction History" in result
+    assert "Enterprise" in result
+    assert "99.99%" in result
+
