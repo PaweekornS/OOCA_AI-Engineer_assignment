@@ -20,6 +20,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code, data, and docs
 COPY . .
 
+# Expose port for FastAPI backend API
+EXPOSE 8000
+
 # Default entrypoint runs the triage runner
 ENTRYPOINT ["python", "main.py"]
 CMD ["--all"]
+

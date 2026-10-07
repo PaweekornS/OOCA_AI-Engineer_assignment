@@ -97,8 +97,29 @@ def main():
         action="store_true",
         help="Output raw JSON instead of Rich formatted tables",
     )
+    parser.add_argument(
+        "--serve",
+        "-s",
+        action="store_true",
+        help="Start the FastAPI HTTP Backend server (Uvicorn)",
+    )
+    parser.add_argument(
+        "--port",
+        "-p",
+        type=int,
+        default=8000,
+        help="Port to bind the API server (default: 8000)",
+    )
 
     args = parser.parse_args()
+
+    # If --serve is requested, launch FastAPI with Uvicorn
+    if args.serve:
+        import uvicorn
+        console.print(f"[bold green]🚀 Starting Support Ticket Triage API on http://127.0.0.1:{args.port}[/bold green]")
+        console.print(f"[dim]📖 Interactive Swagger UI: http://127.0.0.1:{args.port}/docs[/dim]\n")
+        uvicorn.run("src.api.app:app", host="0.0.0.0", port=args.port, reload=False)
+        return
 
     # Pre-flight check for OpenAI API key
     if not settings.openai_api_key or settings.openai_api_key == "your_openai_api_key_here":
@@ -113,6 +134,7 @@ def main():
 
     if not args.json:
         print_banner()
+
 
     # Compile the LangGraph state machine once
     graph_app = create_triage_graph()
