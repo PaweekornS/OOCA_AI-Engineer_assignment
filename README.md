@@ -82,6 +82,28 @@ python main.py --ticket 3
 python main.py --all --json
 ```
 
+### 4. Run as Production FastAPI Backend Server
+Start the high-performance HTTP server with interactive Swagger OpenAPI documentation:
+
+```powershell
+# Option A: Via project CLI runner
+python main.py --serve --port 8000
+
+# Option B: Via Uvicorn directly
+uvicorn src.api.app:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Once running, access the interactive API docs at:
+* **Interactive Swagger UI:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+* **ReDoc Documentation:** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+* **Health Check Probe:** `GET http://127.0.0.1:8000/health`
+* **Triage Stored Ticket by ID:** `POST http://127.0.0.1:8000/api/v1/triage` (Accepts `{ "ticket_id": "TICKET-001" }`)
+* **Real-time Live Chat Triage:** `POST http://127.0.0.1:8000/api/v1/triage/realtime` (Accepts `{ "message": "...", "ticket_id": "TICKET-001" }`)
+* **Tenant-Safe Audit Trail:** `GET http://127.0.0.1:8000/api/v1/audit/logs/{ticket_id}` (Enforces ticket isolation, prevents cross-tenant data leak)
+
+
+
+
 ---
 
 ## 🧪 Running Automated Tests
@@ -116,6 +138,10 @@ OOCA_AI-Eng-test/
 │       ├── macos_desktop_known_issues.md
 │       └── account_security_faq.md
 ├── src/
+│   ├── api/
+│   │   ├── __init__.py         # FastAPI application package
+│   │   ├── app.py              # Endpoints, middleware & lifecycles
+│   │   └── schemas.py          # Request & Response Pydantic DTOs
 │   ├── config.py               # Pydantic settings & environment configuration
 │   ├── state.py                # LangGraph TriageState schema
 │   ├── models/
@@ -136,9 +162,14 @@ OOCA_AI-Eng-test/
 │   │   └── workflow.py         # Compiled StateGraph definition
 │   └── utils/
 │       ├── formatting.py       # Rich terminal UI components
+│       ├── audit_logger.py     # Structured audit trail (logs/triage_audit.jsonl)
+│       ├── response_templates.py # Guardrailed response templates
 │       └── pii_sanitizer.py    # PDPA/GDPR PII masking utility
 └── tests/
+    ├── test_api.py             # FastAPI integration & validation tests
+    ├── test_audit_logger.py    # Structured audit logging unit tests
     ├── test_tools.py           # KB lookup & system status unit tests
     ├── test_guardrails.py      # PII scrubbing & financial promise policy tests
     └── test_triage.py          # State machine transitions & compilation tests
 ```
+
