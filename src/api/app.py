@@ -117,6 +117,13 @@ def triage_ticket(request: TriageRequest):
     """Retrieves an existing support ticket from the repository by ticket_id
     and executes the autonomous LangGraph triage pipeline.
     """
+    existing = _find_existing_ticket(request.ticket_id)
+    if not existing:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Ticket '{request.ticket_id}' not found in active repository. Try 'TICKET-001', 'TICKET-002', or 'TICKET-003'.",
+        )
+
     if not settings.openai_api_key or settings.openai_api_key == "your_openai_api_key_here":
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -124,13 +131,6 @@ def triage_ticket(request: TriageRequest):
         )
 
     start_time = time.perf_counter()
-
-    existing = _find_existing_ticket(request.ticket_id)
-    if not existing:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Ticket '{request.ticket_id}' not found in active repository. Try 'TICKET-001', 'TICKET-002', or 'TICKET-003'.",
-        )
 
     ticket_id = existing["ticket_id"]
     customer_info = existing.get("customer_info", "")

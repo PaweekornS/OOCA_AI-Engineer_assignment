@@ -3,9 +3,33 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from src.api.app import app
+from src.api.app import app, settings, triage_graph
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def mock_graph_and_openai(monkeypatch):
+    monkeypatch.setattr(settings, "openai_api_key", "sk-mock-test-key")
+
+    def fake_invoke(state):
+        return {
+            "ticket_id": state["ticket_id"],
+            "messages": [],
+            "tool_call_count": 0,
+            "triage_result": {
+                "urgency": "high",
+                "next_action": "route_to_specialist",
+                "routing_target": "Billing Operations",
+                "product": "Pro Subscription",
+                "issue_type": "billing_payment",
+                "customer_sentiment": "frustrated_angry",
+                "draft_response": "We are looking into your billing concern.",
+                "reasoning": "Mocked triage decision for API integration testing.",
+            },
+        }
+
+    monkeypatch.setattr(triage_graph, "invoke", fake_invoke)
 
 
 def test_health_check_endpoint():
